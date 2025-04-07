@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DragonXtension</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        /* Custom styles for popups */
+        .popup {
+            display: none;
+        }
+        .popup.show {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <h1 class="text-3xl font-semibold text-center mb-5">DragonXtension</h1>
+
+        <!-- Extension Tutorials Section -->
+        <div id="tutorials" class="space-y-8">
+
+            <!-- Tutorial templates (dynamically filled from extensions.json) -->
+            <div id="tutorialsList"></div>
+        </div>
+
+        <!-- Publish Form -->
+        <div class="bg-white shadow-lg rounded-lg p-5 mt-8">
+            <h2 class="text-2xl font-semibold mb-3">Publish Your Extension</h2>
+            <p>Fill in the details of your extension below, and it will be added to the extensions.json file.</p>
+            <form id="publishForm">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Extension Name</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="platform" class="form-label">Platform (Windows, macOS, Linux)</label>
+                    <select class="form-select" id="platform" required>
+                        <option value="">Select a Platform</option>
+                        <option value="Windows">Windows</option>
+                        <option value="macOS">macOS</option>
+                        <option value="Linux">Linux</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="tutorial" class="form-label">Tutorial Steps</label>
+                    <textarea class="form-control" id="tutorial" rows="4" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="github" class="form-label">GitHub Repository Link</label>
+                    <input type="url" class="form-control" id="github" required placeholder="https://github.com/your-repo">
+                </div>
+                <button type="submit" class="btn btn-primary">Publish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Example of loading extensions from JSON and displaying them
+        const extensionsData = [
+            {
+                "name": "test",
+                "platforms": {
+                    "Windows": {
+                        "tutorial": "Follow the steps below to install DragonXtension on Windows:",
+                        "steps": [
+                            "Download the source code from the GitHub repository: https://github.com/your-repo",
+                            "Clone the repository using the following command: git clone https://github.com/your-repo.git",
+                            "Follow the instructions in the README to install and configure the extension for your browser.",
+                            "Ensure you have prerequisites like Node.js, npm, installed."
+                        ]
+                    },
+                    "macOS": {
+                        "tutorial": "Follow the steps below to install DragonXtension on macOS:",
+                        "steps": [
+                            "Download the source code from the GitHub repository: https://github.com/your-repo",
+                            "Clone the repository using the following command: git clone https://github.com/your-repo.git",
+                            "Follow the instructions in the README to install and configure the extension for your browser.",
+                            "Ensure you have prerequisites like Node.js, npm, installed."
+                        ]
+                    },
+                    "Linux": {
+                        "tutorial": "Follow the steps below to install DragonXtension on Linux:",
+                        "steps": [
+                            "Download the source code from the GitHub repository: https://github.com/your-repo",
+                            "Clone the repository using the following command: git clone https://github.com/your-repo.git",
+                            "Follow the instructions in the README to install and configure the extension for your browser.",
+                            "Ensure you have prerequisites like Node.js, npm, installed."
+                        ]
+                    }
+                }
+            }
+        ];
+
+        // Function to populate tutorials dynamically
+        function populateTutorials() {
+            const tutorialsList = document.getElementById('tutorialsList');
+            extensionsData.forEach(extension => {
+                for (const platform in extension.platforms) {
+                    const platformData = extension.platforms[platform];
+                    const tutorialElement = document.createElement('div');
+                    tutorialElement.classList.add('bg-white', 'shadow-lg', 'rounded-lg', 'p-5');
+                    tutorialElement.innerHTML = `
+                        <h2 class="text-2xl font-semibold mb-3">Installing on ${platform}</h2>
+                        <p>${platformData.tutorial}</p>
+                        <ul class="list-inside list-disc">
+                            ${platformData.steps.map(step => `<li>${step}</li>`).join('')}
+                        </ul>
+                    `;
+                    tutorialsList.appendChild(tutorialElement);
+                }
+            });
+        }
+
+        // Form submission to "Publish" extension info
+        document.getElementById('publishForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const platform = document.getElementById('platform').value;
+            const tutorial = document.getElementById('tutorial').value;
+            const github = document.getElementById('github').value;
+
+            if (!name || !platform || !tutorial || !github) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            // Simulate adding the new extension to the extensionsData (This would normally be handled by a backend)
+            extensionsData.push({
+                name: name,
+                github: github,
+                platforms: {
+                    [platform]: {
+                        tutorial: `Follow the steps below to install ${name} on ${platform}:`,
+                        steps: tutorial.split('\n').map(step => step.trim()).filter(Boolean)
+                    }
+                }
+            });
+
+            alert("Your extension has been published!");
+
+            // Clear the form
+            document.getElementById('publishForm').reset();
+
+            // Re-populate the tutorials with the new extension
+            document.getElementById('tutorialsList').innerHTML = ''; // Clear existing tutorials
+            populateTutorials(); // Re-populate with updated list
+        });
+
+        // Initial population of tutorials
+        populateTutorials();
+    </script>
+</body>
+</html>
+
